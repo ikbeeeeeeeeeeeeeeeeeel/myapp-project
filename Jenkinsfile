@@ -7,16 +7,16 @@ pipeline {
       }
     }
 
-      stage ("test") {
-        steps {
+    stage ("test") {
+      steps {
           echo 'testing the application...'
-        }
-      }
-
-      stage ("deploy") {
-        steps{
-          echo 'deplying the application...'
-        }
       }
     }
+
+    stage ("deploy") {
+      steps{
+        echo 'deplying the application...'
+      }
+    }
+  }
 }
