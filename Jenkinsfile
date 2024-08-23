@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://localhost:8081/repository/front-end-repo/'
+        NEXUS_URL = 'http://localhost:9090/repository/front-end-repo/'
         NEXUS_CREDENTIALS_ID = 'nexus-credentials-id'
     }
 
