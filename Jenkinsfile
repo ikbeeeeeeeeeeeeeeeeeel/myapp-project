@@ -1,57 +1,46 @@
 pipeline {
     agent any
-    
+
     environment {
-        // Ensure Maven is installed and named correctly
-        MAVEN_HOME = tool 'Maven 3.8.6'
-        // Nexus credentials ID configured in Jenkins credentials
+        NEXUS_URL = 'http://localhost:8081/repository/front-end-repo/'
         NEXUS_CREDENTIALS_ID = 'nexus-credentials-id'
     }
-    
+
     stages {
         stage('Build') {
             steps {
-                echo 'Building the application...'
                 script {
-                    // Run Maven build
-                    withMaven(maven: MAVEN_HOME) {
-                        sh 'mvn clean install'
-                    }
+                    // Checkout the latest code from GitHub
+                    checkout scm
+
+                    // Install dependencies and build the front-end application
+                    sh 'npm install'    // or 'yarn install' if you're using Yarn
+                    sh 'npm run build'  // or 'yarn build' if you're using Yarn
                 }
             }
         }
-        
-        stage('Test') {
+
+        stage('Deploy to Nexus') {
             steps {
-                echo 'Testing the application...'
                 script {
-                    // Run Maven tests
-                    withMaven(maven: MAVEN_HOME) {
-                        sh 'mvn test'
-                    }
+                    // Archive build artifacts
+                    archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+
+                    // Upload build artifacts to Nexus
+                    nexusArtifactUploader(
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        nexusUrl: "${env.NEXUS_URL}",
+                        groupId: 'your-group-id',
+                        version: '1.0.0',
+                        repository: 'front-end-repo',
+                        credentialsId: "${env.NEXUS_CREDENTIALS_ID}",
+                        artifacts: [
+                            [artifactId: 'front-end-app', classifier: '', file: 'dist/your-app.zip', type: 'zip']
+                        ]
+                    )
                 }
             }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
-                script {
-                    // Deploy to Nexus
-                    withMaven(maven: MAVEN_HOME) {
-                        sh 'mvn deploy -DskipTests'
-                    }
-                }
-            }
-        }
-    }
-    
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }
