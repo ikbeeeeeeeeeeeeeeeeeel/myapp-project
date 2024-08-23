@@ -7,19 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            steps {
-                script {
-                    // Checkout the latest code from GitHub
-                    checkout scm
-
-                    // Install dependencies and build the front-end application
-                    sh 'yarn install'    // or 'yarn install' if you're using Yarn
-                    sh 'yarn run build'  // or 'yarn build' if you're using Yarn
-                }
-            }
-        }
-
         stage('Deploy to Nexus') {
             steps {
                 script {
@@ -39,6 +26,18 @@ pipeline {
                             [artifactId: 'front-end-app', classifier: '', file: 'dist/your-app.zip', type: 'zip']
                         ]
                     )
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    // Checkout the latest code from GitHub
+                    checkout scm
+
+                    // Install dependencies and build the front-end application
+                    sh 'yarn install'    // or 'yarn install' if you're using Yarn
+                    sh 'yarn run build'  // or 'yarn build' if you're using Yarn
                 }
             }
         }
