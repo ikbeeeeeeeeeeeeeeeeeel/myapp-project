@@ -14,8 +14,8 @@ pipeline {
                     checkout scm
 
                     // Install dependencies and build the front-end application
-                    sh 'npm install'    // or 'yarn install' if you're using Yarn
-                    sh 'npm run build'  // or 'yarn build' if you're using Yarn
+                    sh 'yarn install'    // or 'yarn install' if you're using Yarn
+                    sh 'yarn run build'  // or 'yarn build' if you're using Yarn
                 }
             }
         }
